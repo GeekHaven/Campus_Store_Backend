@@ -2,4 +2,4 @@
 Backend for campus store
 
 ### Routes: 
-![Routes](Isolated-1.png)
+![Routes](routes.png)
