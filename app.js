@@ -1,10 +1,12 @@
 import express from "express";
-import productRoutes from "./routes/product.js";
-import orderRoutes from "./routes/order.js";
-import authRoutes from "./routes/auth.js";
 import mongoose from "mongoose";
 import "express-async-errors";
 import dotenv from "dotenv";
+import productRoutes from "./routes/product.js";
+import orderRoutes from "./routes/order.js";
+import authRoutes from "./routes/auth.js";
+import errorHandler from "./middleware/errorHandler.js";
+
 const app = express();
 
 dotenv.config();
@@ -12,6 +14,7 @@ app.use(express.json());
 app.use("/product", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/auth", authRoutes);
+app.use(errorHandler);
 
 //Database initiation
 mongoose.set("useUnifiedTopology", true);
