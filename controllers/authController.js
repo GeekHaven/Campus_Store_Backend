@@ -3,7 +3,11 @@ import User from "../models/users.js";
 import jwt from "jsonwebtoken";
 
 const signup = async (req, res) => {
-  const { password, ...restBody } = req.body;
+  const { password, email, ...restBody } = req.body;
+  if (!email)
+    return res
+      .status(400)
+      .json({ error: "The email field should not be empty" });
   if (password.length <= 6)
     return res
       .status(400)
@@ -15,8 +19,8 @@ const signup = async (req, res) => {
     ...restBody,
     passwordHash,
   });
-  await user.save();
-  res.status(201).end();
+  const done = await user.save();
+  done ? res.status(201).end() : res.status(500).end();
 };
 
 const login = async (req, res) => {

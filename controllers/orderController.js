@@ -10,7 +10,7 @@ const getOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   checkToken(req, res); //TODO: Check this thing for errors once.
-  const order = await Order.find({}).sort({createdAt: 'desc'}).exec();
+  const order = await Order.find({}).sort({ createdAt: "desc" }).exec();
   res.json(order);
 };
 
