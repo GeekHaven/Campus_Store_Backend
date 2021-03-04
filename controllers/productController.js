@@ -9,6 +9,12 @@ const getProductId = async (req, res) => {
   res.status(200).json(product);
 };
 
+const getAllProducts = async (req, res) => {
+  const products = await Product.find({}).sort({createdAt: 'desc'}).exec();
+  console.log(products);
+  res.status(200).json(products);
+}
+
 const placeOrder = async (req, res) => {
   console.log(`Product ${req.params.id}`);
   const token = req.token;
@@ -38,4 +44,4 @@ const createProduct = async (req, res) => {
   res.json(response);
 };
 
-export { placeOrder, getProductId, createProduct };
+export { placeOrder, getProductId, createProduct, getAllProducts };

@@ -1,6 +1,6 @@
 {
   "name": "campusstore",
-  "version": "1.00",
+  "version": "1.0.0",
   "main": "app.js",
   "type": "module",
   "license": "MIT",

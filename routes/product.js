@@ -5,8 +5,10 @@ import {
   getProductId,
   createProduct,
   placeOrder,
+  getAllProducts
 } from "../controllers/productController.js";
 
+router.route("/").get(getAllProducts);
 router.route("/:id").get(getProductId);
 router.route("/:id/order").get(getProductId).post(getToken, placeOrder);
 router.route("/create").post(getToken, createProduct);
