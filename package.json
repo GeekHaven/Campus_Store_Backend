@@ -2,11 +2,11 @@
   "name": "campusstore",
   "version": "1.0.0",
   "main": "app.js",
-  "type": "module",
   "license": "MIT",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "cross-env NODE_ENV=production node server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --watch"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
@@ -19,6 +19,9 @@
     "mongoose-unique-validator": "^2.0.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "cross-env": "^7.0.3",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.1.3"
   }
 }

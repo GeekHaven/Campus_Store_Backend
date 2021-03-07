@@ -1,21 +1,23 @@
-import bcrypt from "bcrypt";
-import User from "../models/users.js";
-import jwt from "jsonwebtoken";
+const bcrypt = require("bcrypt");
+const User = require("../models/users.js");
+const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
   const { password, email, ...restBody } = req.body;
-  if (!email)
+  if (!email || !password)
     return res
       .status(400)
-      .json({ error: "The email field should not be empty" });
+      .json({ error: "Email and password fields are required" });
+
   if (password.length <= 6)
     return res
       .status(400)
-      .json({ error: "Enter a password with more than 6 characters" });
+      .json({ error: "Password must be longer than 6 characters" });
 
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
   const user = new User({
+    email,
     ...restBody,
     passwordHash,
   });
@@ -29,6 +31,11 @@ const login = async (req, res) => {
     return res.status(400).json({ error: "Enter all the details" });
 
   const user = await User.findOne({ email });
+  if (!user)
+    return res
+      .status(401)
+      .json({ error: "Email does not exist. Please signup first." });
+
   const authenticated =
     user === null ? false : await bcrypt.compare(password, user.passwordHash);
   if (!authenticated)
@@ -43,4 +50,4 @@ const login = async (req, res) => {
   res.status(200).json({ token, tokenUser });
 };
 
-export { signup, login };
+module.exports = { signup, login };

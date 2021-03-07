@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import uniqueValidator from "mongoose-unique-validator";
+const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -30,4 +30,4 @@ const userSchema = new Schema({
 });
 userSchema.plugin(uniqueValidator);
 const User = mongoose.model("User", userSchema);
-export default User;
+module.exports = User;

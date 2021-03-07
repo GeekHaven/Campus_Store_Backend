@@ -1,5 +1,5 @@
-import Order from "../models/orders.js";
-import User from "../models/users.js";
+const Order = require("../models/orders.js");
+const User = require("../models/users.js");
 
 const getOrder = async (req, res) => {
   checkToken(req, res);
@@ -21,4 +21,4 @@ const checkToken = async (req, res) => {
   if (!user || !token) return res.status(401).json({ error: "Unauthorized" });
 };
 
-export { getOrder, getAllOrders };
+module.exports = { getOrder, getAllOrders };

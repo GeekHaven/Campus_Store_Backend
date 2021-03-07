@@ -6,11 +6,10 @@ const errorHandler = (error, req, res, next) => {
   } else if (error.name === "MongoError") {
     return res.status(400).json({ error: error.message });
   } else {
-    return res
-      .status(500)
-      .json({
-        error: "Some error occured on our side. Please retry after some time",
-      });
+    console.log("Some weird error", error);
+    return res.status(500).json({
+      error: "Some error occured on our side. Please retry after some time",
+    });
   }
 };
-export default errorHandler;
+module.exports = errorHandler;
