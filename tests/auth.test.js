@@ -12,7 +12,7 @@ beforeEach(async () => {
   await User.deleteMany({});
 });
 
-describe("Signup test", () => {
+describe("Signup tests", () => {
   it("User is signed up correctly when details are complete", async () => {
     const user = initialUsers[0];
     console.log(user);

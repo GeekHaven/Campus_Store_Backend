@@ -5,6 +5,7 @@ const Order = require("../models/orders");
 const Product = require("../models/products");
 
 const initialUsers = [
+  //*users with complete details
   {
     username: "sarthak",
     email: "sarthak@gmail.com",
@@ -16,6 +17,7 @@ const initialUsers = [
     password: "linuxisbest",
     email: "linuxuser@gmail.com",
   },
+  //* users with incomplete details
   {
     username: "hacker",
     email: "linuxuser@gmail.com",
@@ -24,6 +26,7 @@ const initialUsers = [
     username: "hacker",
     password: "linuxuser@gmail.com",
   },
+  //* user with improper password
   {
     username: "hacker",
     password: "short",
@@ -32,6 +35,7 @@ const initialUsers = [
 ];
 
 const initialProducts = [
+  //* Complete products
   {
     name: "Aparoksha black tee",
     description: "A black t-shirt from Aparoksha",
@@ -45,8 +49,26 @@ const initialProducts = [
     stock: 200,
     price: 500,
   },
+  //* Products with incomplete details
+  {
+    name: "Effe black hoodie",
+    stock: 200,
+    price: 500,
+  },
+  {
+    name: "Effe black tee",
+    image: "foto2.com",
+    price: 500,
+  },
+  {
+    name: "Effe blue tee",
+    image: "foto2.com",
+    stock: 200,
+  },
 ];
 
+//* Functions to help reduce unneccesary code in the tests
+//* Signs up a user and adds them to the database
 const addUser = async ({ password, ...restData }) => {
   const passwordHash = await bcrypt.hash(password, 10);
   const user = new User({
@@ -56,6 +78,7 @@ const addUser = async ({ password, ...restData }) => {
   return await user.save();
 };
 
+//* Signs up and logs the user in, and returns jwt and the user's details
 const loginUser = async (user) => {
   const { email, _id: id } = await addUser(user);
   const tokenUser = {
@@ -69,6 +92,7 @@ const loginUser = async (user) => {
   };
 };
 
+//* directly adds a product to the database
 const addProduct = async (sellerid, product) => {
   const newProduct = new Product({
     ...product,
@@ -77,11 +101,12 @@ const addProduct = async (sellerid, product) => {
   return await newProduct.save();
 };
 
-const createOrder = async (user, product) => {
+//* directly creates an order for a product
+const createOrder = async (userid, product) => {
   const order = new Order({
     sellerid: product.sellerid,
-    userid: user._id,
-    product: product._id,
+    userid,
+    product: product.id,
   });
   return await order.save();
 };

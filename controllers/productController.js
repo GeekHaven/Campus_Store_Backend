@@ -3,20 +3,17 @@ const User = require("../models/users.js");
 const Order = require("../models/orders.js");
 
 const getProductId = async (req, res) => {
-  console.log(`Product ${req.params.id}`);
   const product = await Product.findById(req.params.id);
   if (!product) return res.status(404).end();
-  res.status(200).json(product);
+  res.json(product);
 };
 
 const getAllProducts = async (req, res) => {
   const products = await Product.find({}).sort({ createdAt: "desc" }).exec();
-  console.log(products);
-  res.status(200).json(products);
+  res.json(products);
 };
 
 const placeOrder = async (req, res) => {
-  console.log(`Product ${req.params.id}`);
   const token = req.token;
   const product = await Product.findById(req.params.id);
   const user = await User.findById(token.id);
@@ -27,7 +24,9 @@ const placeOrder = async (req, res) => {
     product: product._id,
   });
   const response = await newOrder.save();
-  res.json(response);
+  user.orders.push(response._id);
+  await user.save();
+  res.status(201).json(response);
 };
 
 const createProduct = async (req, res) => {
