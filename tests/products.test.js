@@ -95,7 +95,7 @@ describe("Creating products", () => {
   });
 });
 
-describe("Getting all products", () => {
+describe("Getting the products", () => {
   let product1, product2;
   beforeEach(async () => {
     Product.deleteMany({});

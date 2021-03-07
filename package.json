@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "test": "cross-env NODE_ENV=test jest --watch"
+    "dev-test": "cross-env NODE_ENV=test jest --runInBand --verbose --watch",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",

@@ -10,6 +10,7 @@ const {
 const app = require("../app");
 const User = require("../models/users");
 const Order = require("../models/orders");
+const Product = require("../models/products");
 
 const api = supertest(app);
 const url = "/orders";
@@ -18,6 +19,7 @@ let seller, buyer, product1, product2, order1, order2;
 beforeEach(async () => {
   await User.deleteMany({});
   await Order.deleteMany({});
+  await Product.deleteMany({});
   seller = await loginUser(initialUsers[0]);
   buyer = await loginUser(initialUsers[1]);
   product1 = await addProduct(seller.tokenUser.id, initialProducts[0]);
@@ -35,7 +37,14 @@ describe("Getting an order by id", () => {
     expect(JSON.stringify(body)).toBe(JSON.stringify(order1));
   });
 
-  it("returns error order when given incorrect headers", async () => {
+  it("returns error when given incorrect id", async () => {
+    const { body } = await api
+      .get(`${url}/${order1._id}hehe`)
+      .set("Authorization", `bearer ${buyer.token}`)
+      .expect(404);
+  });
+
+  it("returns error when given incorrect headers", async () => {
     const { body } = await api
       .get(`${url}/${order1._id}`)
       .set("Authorization", `bearer blehbleh`)

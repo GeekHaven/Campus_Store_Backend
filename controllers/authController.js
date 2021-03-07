@@ -21,8 +21,8 @@ const signup = async (req, res) => {
     ...restBody,
     passwordHash,
   });
-  const done = await user.save();
-  done ? res.status(201).end() : res.status(500).end();
+  await user.save();
+  res.status(201).end();
 };
 
 const login = async (req, res) => {
@@ -36,8 +36,7 @@ const login = async (req, res) => {
       .status(401)
       .json({ error: "Email does not exist. Please signup first." });
 
-  const authenticated =
-    user === null ? false : await bcrypt.compare(password, user.passwordHash);
+  const authenticated = await bcrypt.compare(password, user.passwordHash);
   if (!authenticated)
     return res.status(401).json({ error: "Invalid credentials" });
 

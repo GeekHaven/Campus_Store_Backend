@@ -44,6 +44,19 @@ describe("Signup tests", () => {
     const res = await api.post(signup).send(user).expect(400);
     expect(res.body.error).toBe("Password must be longer than 6 characters");
   });
+
+  it("Sends 400 status and error message in case of duplicate email ids", async () => {
+    await api.post(signup).send(initialUsers[0]);
+    const user2 = {
+      ...initialUsers[1],
+      email: initialUsers[0].email,
+    };
+
+    const res2 = await api.post(signup).send(user2).expect(400);
+    expect(res2.body.error).toBe(
+      `User validation failed: email: Error, expected \`email\` to be unique. Value: \`${initialUsers[0].email}\``
+    );
+  });
 });
 
 describe("Login tests", () => {
