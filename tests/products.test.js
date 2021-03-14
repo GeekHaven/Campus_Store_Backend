@@ -161,6 +161,108 @@ describe("Placing order for a product", () => {
   });
 });
 
+describe("Updating products", () => {
+  let product1, product2;
+  beforeEach(async () => {
+    Product.deleteMany({});
+    product1 = await addProduct(seller.tokenUser.id, initialProducts[0]);
+    product2 = await addProduct(seller.tokenUser.id, initialProducts[1]);
+  });
+
+  it("updates the product when proper data is sent by the seller", async () => {
+    await api
+      .put(`${url}/${product1._id}`)
+      .set("Authorization", `bearer ${seller.token}`)
+      .send({
+        name: "Aparoksha red tee",
+        description: "A red tee from aparoksha",
+      })
+      .expect(200);
+    const updated = await Product.findById(product1._id);
+    expect(updated).toMatchObject({
+      ...initialProducts[0],
+      name: "Aparoksha red tee",
+      description: "A red tee from aparoksha",
+    });
+  });
+
+  it("returns 401 in case of unauthorized user", async () => {
+    await api
+      .put(`${url}/${product1._id}`)
+      .set("Authorization", `bearer ${buyer.token}`)
+      .send({
+        name: "Aparoksha red tee",
+        description: "A red tee from aparoksha",
+      })
+      .expect(401);
+
+    let original = await Product.findById(product1._id);
+    expect(original).toMatchObject(initialProducts[0]);
+
+    await api
+      .put(`${url}/${product1._id + 10000}`)
+      .set("Authorization", `bearer ${seller.token}`)
+      .send({
+        name: "Aparoksha red tee",
+        description: "A red tee from aparoksha",
+      })
+      .expect(404);
+
+    original = await Product.findById(product1._id);
+    expect(original).toMatchObject(initialProducts[0]);
+
+    await api
+      .put(`${url}/${product1._id}`)
+      .send({
+        name: "Aparoksha red tee",
+        description: "A red tee from aparoksha",
+      })
+      .expect(401);
+
+    original = await Product.findById(product1._id);
+    expect(original).toMatchObject(initialProducts[0]);
+  });
+});
+
+describe("Deleting products", () => {
+  let product1, product2;
+  beforeEach(async () => {
+    Product.deleteMany({});
+    product1 = await addProduct(seller.tokenUser.id, initialProducts[0]);
+    product2 = await addProduct(seller.tokenUser.id, initialProducts[1]);
+  });
+
+  it("deletes the product when proper data is sent by the seller", async () => {
+    await api
+      .delete(`${url}/${product1._id}`)
+      .set("Authorization", `bearer ${seller.token}`)
+      .expect(204);
+
+    const product = await Product.findById(product1._id);
+    expect(product).toBeNull();
+  });
+
+  it("returns error when proper data is not sent", async () => {
+    await api
+      .delete(`${url}/${product1._id + 1000}`)
+      .set("Authorization", `bearer ${seller.token}`)
+      .expect(404);
+    let product = await Product.findById(product1._id);
+    expect(product).toBeDefined();
+
+    await api.delete(`${url}/${product1._id}`).expect(401);
+    product = await Product.findById(product1._id);
+    expect(product).toBeDefined();
+
+    await api
+      .delete(`${url}/${product1._id}`)
+      .set("Authorization", `bearer ${buyer.token}`)
+      .expect(401);
+    product = await Product.findById(product1._id);
+    expect(product).toBeDefined();
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

@@ -93,10 +93,10 @@ describe("Login tests", () => {
 
   it("Returns 400 status and error message in case of incomplete details", async () => {
     let res = await api.post(login).send({ password: "randombs" }).expect(400);
-    expect(res.body.error).toBe("Enter all the details");
+    expect(res.body.error).toBe("Please enter all the details");
 
     res = await api.post(login).send({ email: user.email }).expect(400);
-    expect(res.body.error).toBe("Enter all the details");
+    expect(res.body.error).toBe("Please enter all the details");
   });
 });
 

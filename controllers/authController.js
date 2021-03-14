@@ -28,7 +28,7 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
-    return res.status(400).json({ error: "Enter all the details" });
+    return res.status(400).json({ error: "Please enter all the details" });
 
   const user = await User.findOne({ email });
   if (!user)
@@ -46,7 +46,7 @@ const login = async (req, res) => {
     id: user._id,
   };
 
-  const token = jwt.sign(tokenUser, process.env.SECRET);
+  const token = jwt.sign(tokenUser, process.env.SECRET, { expiresIn: "5d" });
   res.json({ token, tokenUser });
 };
 
