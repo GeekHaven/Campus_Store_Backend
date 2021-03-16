@@ -6,11 +6,11 @@ const {
   loginUser,
   addProduct,
   createOrder,
-} = require("./test_helper");
-const app = require("../app");
-const User = require("../models/users");
-const Order = require("../models/orders");
-const Product = require("../models/products");
+  User,
+  Product,
+  Order,
+  app,
+} = require("../test_helper");
 
 const api = supertest(app);
 const url = "/orders";

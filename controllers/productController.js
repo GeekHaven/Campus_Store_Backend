@@ -24,7 +24,6 @@ const updateProduct = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
 
   const updated = await Product.findByIdAndUpdate(product._id, productChanges);
-  console.log("The updated val is ", updated);
   res.status(200).json(updated);
 };
 
@@ -39,7 +38,6 @@ const deleteProduct = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
 
   await Product.findByIdAndRemove(product._id);
-
   res.status(204).end();
 };
 
@@ -66,7 +64,7 @@ const createProduct = async (req, res) => {
   if (!user || !user.isSeller)
     return res.status(401).json({ error: "Unauthorized" });
 
-  if (!product)
+  if (Object.keys(product).length == 0)
     return res.status(400).json({ error: "Please enter all the details" });
   const saveProduct = new Product({
     ...product,

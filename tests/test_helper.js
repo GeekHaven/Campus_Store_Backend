@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/users.js");
 const Order = require("../models/orders");
 const Product = require("../models/products");
+const app = require("../app");
 
 const initialUsers = [
   //*users with complete details
@@ -118,4 +119,8 @@ module.exports = {
   loginUser,
   addProduct,
   createOrder,
+  User,
+  Product,
+  Order,
+  app,
 };

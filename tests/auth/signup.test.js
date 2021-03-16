@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
-const { initialUsers, addUser } = require("./test_helper");
-const app = require("../app");
-const User = require("../models/users");
+const { initialUsers, addUser, app, User } = require("../test_helper");
 
 const api = supertest(app);
 const signup = "/auth/signup";
@@ -56,47 +54,6 @@ describe("Signup tests", () => {
     expect(res2.body.error).toBe(
       `User validation failed: email: Error, expected \`email\` to be unique. Value: \`${initialUsers[0].email}\``
     );
-  });
-});
-
-describe("Login tests", () => {
-  let user;
-  beforeEach(async () => {
-    user = initialUsers[0];
-    await addUser(user);
-  });
-
-  it("Logs in user and returns token when creds are valid", async () => {
-    const res = await api
-      .post(login)
-      .send({ email: user.email, password: user.password })
-      .expect(200);
-    expect(res.body.token).toBeDefined();
-    expect(res.body.tokenUser.email).toBe(user.email);
-  });
-
-  it("Returns 401 status and error message in case of wrong password", async () => {
-    const res = await api
-      .post(login)
-      .send({ email: user.email, password: "randombs" })
-      .expect(401);
-    expect(res.body.error).toBe("Invalid credentials");
-  });
-
-  it("Returns 401 status and error message in case of wrong email", async () => {
-    const res = await api
-      .post(login)
-      .send({ email: "www.email.com", password: "randombs" })
-      .expect(401);
-    expect(res.body.error).toBe("Email does not exist. Please signup first.");
-  });
-
-  it("Returns 400 status and error message in case of incomplete details", async () => {
-    let res = await api.post(login).send({ password: "randombs" }).expect(400);
-    expect(res.body.error).toBe("Please enter all the details");
-
-    res = await api.post(login).send({ email: user.email }).expect(400);
-    expect(res.body.error).toBe("Please enter all the details");
   });
 });
 
