@@ -5,6 +5,8 @@ const errorHandler = (error, req, res, next) => {
     return res.status(400).json({ error: error.message });
   } else if (error.name === "MongoError") {
     return res.status(400).json({ error: error.message });
+  } else if (error.name === "JsonWebTokenError") {
+    return res.status(400).json({ error: "Invalid token" });
   } else {
     console.log("Some weird error", error);
     return res.status(500).json({

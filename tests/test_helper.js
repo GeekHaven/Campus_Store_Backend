@@ -4,6 +4,7 @@ const User = require("../models/users.js");
 const Order = require("../models/orders");
 const Product = require("../models/products");
 const app = require("../app");
+const Seller = require("../models/sellers.js");
 
 const initialUsers = [
   //*users with complete details
@@ -11,7 +12,6 @@ const initialUsers = [
     username: "sarthak",
     email: "sarthak@gmail.com",
     password: "sarthak",
-    isSeller: true,
   },
   {
     username: "hacker",
@@ -32,6 +32,19 @@ const initialUsers = [
     username: "hacker",
     password: "short",
     email: "linuxuser@gmail.com",
+  },
+];
+
+const initialSellers = [
+  {
+    username: "Aparkosha",
+    email: "aparoksha@iiita.ac.in",
+    password: "festofthenorth",
+  },
+  {
+    username: "Effervescence",
+    email: "effe@iiita.ac.in",
+    password: "effekaisahoga",
   },
 ];
 
@@ -93,11 +106,28 @@ const loginUser = async (user) => {
   };
 };
 
+//* Signs up and logs in a seller
+const loginSeller = async ({ password, ...restData }) => {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const seller = await new Seller({
+    passwordHash,
+    ...restData,
+  }).save();
+
+  const { email, _id: id } = seller;
+  const tokenSeller = { email, id, type: "seller" };
+  const token = jwt.sign(tokenSeller, process.env.SECRET);
+  return {
+    token,
+    tokenSeller,
+  };
+};
+
 //* directly adds a product to the database
-const addProduct = async (sellerid, product) => {
+const addProduct = async (seller, product) => {
   const newProduct = new Product({
     ...product,
-    sellerid,
+    seller,
   });
   return await newProduct.save();
 };
@@ -105,8 +135,8 @@ const addProduct = async (sellerid, product) => {
 //* directly creates an order for a product
 const createOrder = async (userid, product) => {
   const order = new Order({
-    sellerid: product.sellerid,
-    userid,
+    seller: product.seller,
+    user: userid,
     product: product.id,
   });
   return await order.save();
@@ -115,12 +145,15 @@ const createOrder = async (userid, product) => {
 module.exports = {
   initialProducts,
   initialUsers,
+  initialSellers,
+  loginSeller,
   addUser,
   loginUser,
   addProduct,
   createOrder,
   User,
   Product,
+  Seller,
   Order,
   app,
 };

@@ -1,7 +1,9 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/users.js");
 const jwt = require("jsonwebtoken");
+const { baseModelName } = require("../models/users.js");
 
+// Add the user's details to the database.
 const signup = async (req, res) => {
   const { password, email, ...restBody } = req.body;
   if (!email || !password)
@@ -25,6 +27,7 @@ const signup = async (req, res) => {
   res.status(201).end();
 };
 
+// Log the user in by verifying the creds and returning a token in case of valid login
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -49,5 +52,7 @@ const login = async (req, res) => {
   const token = jwt.sign(tokenUser, process.env.SECRET, { expiresIn: "5d" });
   res.json({ token, tokenUser });
 };
+
+const sellerLogin = async (req, res) => {};
 
 module.exports = { signup, login };

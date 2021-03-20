@@ -5,19 +5,24 @@ const orderSchema = new Schema(
   {
     product: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
       required: true,
     },
-    sellerid: {
+    seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Seller",
       required: true,
     },
-    userid: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     confirmed: {
+      type: Boolean,
+      default: false,
+    },
+    delivered: {
       type: Boolean,
       default: false,
     },

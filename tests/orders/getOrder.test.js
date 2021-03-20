@@ -3,10 +3,13 @@ const supertest = require("supertest");
 const {
   initialProducts,
   initialUsers,
+  initialSellers,
   loginUser,
+  loginSeller,
   addProduct,
   createOrder,
   User,
+  Seller,
   Product,
   Order,
   app,
@@ -15,15 +18,17 @@ const {
 const api = supertest(app);
 const url = "/orders";
 
-let seller, buyer, product1, product2, order1, order2;
+let seller, buyer, product1, product2, order1, order2, buyer2;
 beforeEach(async () => {
   await User.deleteMany({});
   await Order.deleteMany({});
   await Product.deleteMany({});
-  seller = await loginUser(initialUsers[0]);
-  buyer = await loginUser(initialUsers[1]);
-  product1 = await addProduct(seller.tokenUser.id, initialProducts[0]);
-  product2 = await addProduct(seller.tokenUser.id, initialProducts[1]);
+  await Seller.deleteMany({});
+  seller = await loginSeller(initialSellers[0]);
+  buyer = await loginUser(initialUsers[0]);
+  buyer2 = await loginUser(initialUsers[1]);
+  product1 = await addProduct(seller.tokenSeller.id, initialProducts[0]);
+  product2 = await addProduct(seller.tokenSeller.id, initialProducts[1]);
   order1 = await createOrder(buyer.tokenUser.id, product1);
   order2 = await createOrder(buyer.tokenUser.id, product2);
 });
@@ -34,6 +39,11 @@ describe("Getting an order by id", () => {
       .get(`${url}/${order1._id}`)
       .set("Authorization", `bearer ${buyer.token}`)
       .expect(200);
+    await order1
+      .populate("seller")
+      .populate("user")
+      .populate("product")
+      .execPopulate();
     expect(JSON.stringify(body)).toBe(JSON.stringify(order1));
   });
 
@@ -44,12 +54,19 @@ describe("Getting an order by id", () => {
       .expect(404);
   });
 
-  it("returns error when given incorrect headers", async () => {
+  it("returns error when given malformed headers", async () => {
     const { body } = await api
       .get(`${url}/${order1._id}`)
       .set("Authorization", `bearer blehbleh`)
-      .expect(401);
-    expect(body.error).toBe("Unauthorized");
+      .expect(400);
+    expect(body.error).toBe("Invalid token");
+  });
+
+  it("returns error when given incorrect headers", async () => {
+    const { body } = await api
+      .get(`${url}/${order1._id}`)
+      .set("Authorization", `bearer ${buyer2.token}`)
+      .expect(404);
   });
 });
 
@@ -68,8 +85,8 @@ describe("Getting all the orders for a user", () => {
     const { body } = await api
       .get(`${url}`)
       .set("Authorization", `bearer blehbleh`)
-      .expect(401);
-    expect(body.error).toBe("Unauthorized");
+      .expect(400);
+    expect(body.error).toBe("Invalid token");
   });
 
   it("returns empty array for users with no orders", async () => {

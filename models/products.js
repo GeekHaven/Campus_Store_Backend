@@ -7,7 +7,7 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    sellerid: {
+    seller: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
