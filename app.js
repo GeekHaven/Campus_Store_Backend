@@ -1,7 +1,7 @@
 const express = require("express");
+require("express-async-errors");
 const cors = require("cors");
 const mongoose = require("mongoose");
-require("express-async-errors");
 const dotenv = require("dotenv");
 const productRoutes = require("./routes/product.js");
 const orderRoutes = require("./routes/order.js");

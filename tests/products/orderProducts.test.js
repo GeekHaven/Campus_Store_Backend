@@ -28,14 +28,9 @@ const url = "/product";
 
 describe("Placing order for a product", () => {
   it("adds an order for the product when given proper info", async () => {
-    const correctOrder = {
-      user: buyer.tokenUser.id.toJSON(),
-      seller: seller.tokenSeller.id.toJSON(),
-      product: product1._id.toJSON(),
-    };
-
     const { body } = await api
       .post(`${url}/${product1._id}/order`)
+      .send({ quantity: 2 })
       .set("Authorization", `bearer ${buyer.token}`)
       .expect(201);
 
@@ -46,12 +41,11 @@ describe("Placing order for a product", () => {
       .exec();
 
     expect(user.orders).toHaveLength(1);
-    console.log(body._id);
-    console.log(user.orders[0]._id);
     expect(user.orders[0]._id.toString()).toBe(body._id);
 
-    const res2 = await api
+    await api
       .post(`${url}/${product2._id}/order`)
+      .send({ quantity: 1 })
       .set("Authorization", `bearer ${buyer.token}`)
       .expect(201);
 

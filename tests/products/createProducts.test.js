@@ -6,7 +6,6 @@ const {
   initialSellers,
   loginUser,
   loginSeller,
-  addProduct,
   app,
   Product,
   User,

@@ -18,11 +18,19 @@ const orderSchema = new Schema(
       ref: "User",
       required: true,
     },
+    quantity: {
+      type: Number,
+      required: true,
+    },
     confirmed: {
       type: Boolean,
       default: false,
     },
     delivered: {
+      type: Boolean,
+      default: false,
+    },
+    outForDelivery: {
       type: Boolean,
       default: false,
     },

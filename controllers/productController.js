@@ -48,7 +48,10 @@ const deleteProduct = async (req, res) => {
 
 // Place order for a product, given that the buyer is signed in
 const placeOrder = async (req, res) => {
-  const { token } = req;
+  const {
+    token,
+    body: { quantity },
+  } = req;
   const product = await Product.findById(req.params.id);
   const user = await User.findById(token.id);
   if (!user || !token) return res.status(401).json({ error: "Unauthorized" });
@@ -57,6 +60,7 @@ const placeOrder = async (req, res) => {
     seller: product.seller,
     user: user._id,
     product: product._id,
+    quantity,
   }).save();
 
   const seller = await Seller.findById(product.seller);

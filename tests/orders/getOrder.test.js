@@ -29,8 +29,8 @@ beforeEach(async () => {
   buyer2 = await loginUser(initialUsers[1]);
   product1 = await addProduct(seller.tokenSeller.id, initialProducts[0]);
   product2 = await addProduct(seller.tokenSeller.id, initialProducts[1]);
-  order1 = await createOrder(buyer.tokenUser.id, product1);
-  order2 = await createOrder(buyer.tokenUser.id, product2);
+  order1 = await createOrder(buyer.tokenUser.id, product1, 2);
+  order2 = await createOrder(buyer.tokenUser.id, product2, 1);
 });
 
 describe("Getting an order by id", () => {

@@ -33,13 +33,20 @@ const initialUsers = [
     password: "short",
     email: "linuxuser@gmail.com",
   },
+  //* admin
+  {
+    username: "admin",
+    password: "password",
+    email: "admin@gmail.com",
+    isAdmin: true,
+  },
 ];
 
 const initialSellers = [
   {
     username: "Aparkosha",
     email: "aparoksha@iiita.ac.in",
-    password: "festofthenorth",
+    password: "festinthenorth",
   },
   {
     username: "Effervescence",
@@ -89,7 +96,7 @@ const addUser = async ({ password, ...restData }) => {
     passwordHash,
     ...restData,
   });
-  return await user.save();
+  return user.save();
 };
 
 //* Signs up and logs the user in, and returns jwt and the user's details
@@ -108,12 +115,7 @@ const loginUser = async (user) => {
 
 //* Signs up and logs in a seller
 const loginSeller = async ({ password, ...restData }) => {
-  const passwordHash = await bcrypt.hash(password, 10);
-  const seller = await new Seller({
-    passwordHash,
-    ...restData,
-  }).save();
-
+  const seller = await registerSeller({ password, ...restData });
   const { email, _id: id } = seller;
   const tokenSeller = { email, id, type: "seller" };
   const token = jwt.sign(tokenSeller, process.env.SECRET);
@@ -123,23 +125,42 @@ const loginSeller = async ({ password, ...restData }) => {
   };
 };
 
+//* Adds a seller to the database
+const registerSeller = async ({ password, ...restData }) => {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const seller = await new Seller({
+    passwordHash,
+    ...restData,
+  }).save();
+  return seller;
+};
+
 //* directly adds a product to the database
 const addProduct = async (seller, product) => {
   const newProduct = new Product({
     ...product,
     seller,
   });
-  return await newProduct.save();
+  return newProduct.save();
 };
 
 //* directly creates an order for a product
-const createOrder = async (userid, product) => {
-  const order = new Order({
+const createOrder = async (userid, product, quantity) => {
+  const order = await new Order({
     seller: product.seller,
     user: userid,
     product: product.id,
-  });
-  return await order.save();
+    quantity,
+  }).save();
+
+  const seller = await Seller.findById(product.seller);
+  const user = await User.findById(userid);
+  user.orders.push(order._id);
+  seller.orders.push(order._id);
+  await user.save();
+  await seller.save();
+
+  return order;
 };
 
 module.exports = {
@@ -147,6 +168,7 @@ module.exports = {
   initialUsers,
   initialSellers,
   loginSeller,
+  registerSeller,
   addUser,
   loginUser,
   addProduct,

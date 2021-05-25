@@ -6,8 +6,9 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "dev-test": "cross-env NODE_ENV=test jest --runInBand --verbose --watch",
+    "dev-test": "cross-env NODE_ENV=test jest --runInBand --verbose false --watch",
     "test": "cross-env NODE_ENV=test jest --runInBand",
+    "lint": "eslint .",
     "coverage": "cross-env NODE_ENV=test jest --coverage --runInBand"
   },
   "dependencies": {
@@ -22,8 +23,20 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^1.7.0",
     "jest": "^26.6.3",
     "nodemon": "^2.0.6",
+    "prettier": "^2.2.1",
     "supertest": "^6.1.3"
   }
 }

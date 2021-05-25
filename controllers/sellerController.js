@@ -1,9 +1,12 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Seller = require("../models/sellers");
 const User = require("../models/users");
 const Order = require("../models/orders");
 
 const loginSeller = async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
   //checking for required data
   if (!email || !password)
     return res.status(400).json({ error: "Please enter all the details" });
@@ -33,9 +36,9 @@ const loginSeller = async (req, res) => {
 
 const registerSeller = async (req, res) => {
   const { token } = req;
+  console.log(req.body);
   const { email, password, ...restBody } = req.body;
   const user = await User.findById(token.id);
-
   // user who isn't an admin cannot add a new seller
   if (!user.isAdmin)
     return res
@@ -68,36 +71,41 @@ const getSellerData = async (req, res) => {
     })
     .exec();
   console.log(seller);
-  if (token.type !== "seller" || !seller) return res.status(404);
-
-  const profile = {
-    ...seller,
-  };
-  res.status(200).json(profile);
+  if (token.type !== "seller" || !seller) return res.status(404).end();
+  res.status(200).json(seller);
 };
 
 const getOrderById = async (req, res) => {
   const order = await checkSeller(req.token, req.params.id);
-  if (!order) return res.status(404);
+  if (!order) return res.status(404).end();
   res.status(200).json(order);
 };
 
 const modifyOrderStatus = async (req, res) => {
-  const order = await checkSeller(req.token, req.params.id);
-  if (!order) return res.status(404);
-  const { confirmed, delivered } = req.body;
-  order.confirmed = confirmed;
-  order.delivered = delivered;
-  await order.save();
+  const { token } = req;
+  if (token.type !== "seller") return res.status(404).end();
+
+  const orderId = req.params.id;
+  let order = await Order.findById(orderId);
+
+  if (!order || !order.seller._id.equals(token.id))
+    return res.status(404).end();
+
+  const modifiedOrder = await Order.findByIdAndUpdate(orderId, req.body, {
+    new: true,
+  });
+  console.log("The req.body is", req.body);
+  console.log("The order is", order);
+  console.log("The modified order is", modifiedOrder);
+  res.status(200).json(modifiedOrder);
 };
 
 async function checkSeller(token, orderId) {
   if (token.type !== "seller") return false;
   const order = await Order.findById(orderId).populate("seller").exec();
-  if (!order || order.seller._id !== token.id) return false;
+  if (!order || !order.seller._id.equals(token.id)) return false;
   return order;
 }
-
 module.exports = {
   getSellerData,
   loginSeller,

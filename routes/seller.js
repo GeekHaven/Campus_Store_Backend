@@ -3,7 +3,6 @@ const getToken = require("../middleware/getToken");
 const router = express.Router();
 const {
   getSellerData,
-  getOrders,
   loginSeller,
   registerSeller,
   getOrderById,
