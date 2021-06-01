@@ -27,6 +27,7 @@ const loginSeller = async (req, res) => {
   const tokenUser = {
     email: seller.email,
     id: seller._id,
+    username: seller.username,
     type: "seller",
   };
 
@@ -51,9 +52,12 @@ const registerSeller = async (req, res) => {
       .status(400)
       .json({ error: "Email and password are required fields" });
 
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+
   const seller = new Seller({
     email,
-    passwordHash: password,
+    passwordHash,
     ...restBody,
   });
 
