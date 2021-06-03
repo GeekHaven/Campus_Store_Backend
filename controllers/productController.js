@@ -56,6 +56,11 @@ const placeOrder = async (req, res) => {
   const user = await User.findById(token.id);
   if (!user || !token) return res.status(401).json({ error: "Unauthorized" });
   if (!product) return res.status(404);
+  if (product.stock < quantity)
+    return res.status(400).json({ error: "Quantity not available" });
+
+  console.log(user);
+  console.log(product);
   const newOrder = await new Order({
     seller: product.seller,
     user: user._id,
@@ -63,7 +68,10 @@ const placeOrder = async (req, res) => {
     quantity,
   }).save();
 
+  console.log(newOrder);
+
   const seller = await Seller.findById(product.seller);
+  console.log(seller);
   user.orders.push(newOrder._id);
   seller.orders.push(newOrder._id);
   await user.save();

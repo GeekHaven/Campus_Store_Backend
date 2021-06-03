@@ -70,7 +70,6 @@ describe("Modifying the order information", () => {
       .set("Authorization", `Bearer ${seller.token}`)
       .expect(200);
     const { confirmed, delivered, outForDelivery } = body;
-    console.log(body);
     expect({
       delivered: true,
       confirmed: true,
@@ -80,6 +79,20 @@ describe("Modifying the order information", () => {
       delivered,
       outForDelivery,
     });
+  });
+
+  it("alters the stock when order is confirmed", async () => {
+    const product = await Product.findById(order1.product);
+    const { body } = await api
+      .put(`${url}/orders/${order1._id}`)
+      .send({
+        confirmed: true,
+      })
+      .set("Authorization", `Bearer ${seller.token}`)
+      .expect(200);
+
+    const updatedProduct = await Product.findById(order1.product);
+    expect(updatedProduct.stock).toBe(product.stock - 1);
   });
 });
 

@@ -55,6 +55,16 @@ describe("Placing order for a product", () => {
 
     expect(user2.orders).toHaveLength(2);
   });
+
+  it("returns 400 if quantity > available stock", async () => {
+    const { body } = await api
+      .post(`${url}/${product1._id}/order`)
+      .send({ quantity: 10000 })
+      .set("Authorization", `bearer ${buyer.token}`)
+      .expect(400);
+
+    expect(body.error).toBe("Quantity not available");
+  });
 });
 
 afterAll(() => {

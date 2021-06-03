@@ -30,13 +30,12 @@ describe("Login tests for the seller", () => {
       })
       .expect(200);
     expect(body.token).toBeDefined();
-    expect(JSON.stringify(body.tokenUser)).toBe(
-      JSON.stringify({
-        email: initialSellers[0].email,
-        id: String(seller._id),
-        type: "seller",
-      })
-    );
+    expect(body.tokenUser).toMatchObject({
+      email: initialSellers[0].email,
+      username: initialSellers[0].username,
+      id: String(seller._id),
+      type: "seller",
+    });
   });
 
   it("should return 400 in case of incomplete data", async () => {

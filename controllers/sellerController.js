@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const Seller = require("../models/sellers");
 const User = require("../models/users");
 const Order = require("../models/orders");
+const Product = require("../models/products");
 
 const loginSeller = async (req, res) => {
   const { email, password } = req.body;
@@ -94,6 +95,14 @@ const modifyOrderStatus = async (req, res) => {
 
   if (!order || !order.seller._id.equals(token.id))
     return res.status(404).end();
+
+  const product = await Product.findById(order.product);
+  if (order.confirmed === false && req.body.confirmed === true) {
+    if (order.quantity > product.stock)
+      return res.status(400).json({ error: "Quantity not available" });
+    product.stock -= order.quantity;
+    await product.save();
+  }
 
   const modifiedOrder = await Order.findByIdAndUpdate(orderId, req.body, {
     new: true,
