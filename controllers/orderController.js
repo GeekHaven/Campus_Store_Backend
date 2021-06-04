@@ -7,8 +7,7 @@ const getOrder = async (req, res) => {
   const { token } = req;
   const user = await User.findById(token.id);
   const order = await Order.findById(req.params.id)
-    .populate("seller")
-    .populate("user")
+    .populate("seller","username")
     .populate("product")
     .exec();
 
@@ -25,6 +24,8 @@ const getOrder = async (req, res) => {
 const getAllOrders = async (req, res) => {
   const orders = await Order.find({ user: req.token.id })
     .sort({ createdAt: "desc" })
+    .populate("product","name image price")
+    .populate("seller", "username")
     .exec();
   res.json(orders);
 };
