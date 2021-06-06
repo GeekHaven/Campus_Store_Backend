@@ -71,8 +71,15 @@ const getSellerData = async (req, res) => {
   const seller = await Seller.findById(token.id)
     .populate({
       path: "orders",
-      populate: { path: "user" },
       populate: { path: "product" },
+    })
+    .populate({
+      path: "orders",
+      populate: { path: "seller" },
+    })
+    .populate({
+      path: "orders",
+      populate: { path: "user" },
     })
     .exec();
   console.log(seller);
@@ -115,7 +122,11 @@ const modifyOrderStatus = async (req, res) => {
 
 async function checkSeller(token, orderId) {
   if (token.type !== "seller") return false;
-  const order = await Order.findById(orderId).populate("seller").exec();
+  const order = await Order.findById(orderId)
+    .populate("seller")
+    .populate("product")
+    .populate("user")
+    .exec();
   if (!order || !order.seller._id.equals(token.id)) return false;
   return order;
 }

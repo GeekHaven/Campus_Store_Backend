@@ -41,6 +41,13 @@ describe("Seller data retrieval tests", () => {
       .populate({
         path: "orders",
         populate: { path: "user" },
+      })
+      .populate({
+        path: "orders",
+        populate: { path: "seller" },
+      })
+      .populate({
+        path: "orders",
         populate: { path: "product" },
       })
       .exec();

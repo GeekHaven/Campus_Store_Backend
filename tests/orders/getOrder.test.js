@@ -1,3 +1,4 @@
+const e = require("express");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const {
@@ -40,10 +41,10 @@ describe("Getting an order by id", () => {
       .set("Authorization", `bearer ${buyer.token}`)
       .expect(200);
     await order1
-      .populate("seller")
-      .populate("user")
+      .populate("seller", "username")
       .populate("product")
       .execPopulate();
+
     expect(JSON.stringify(body)).toBe(JSON.stringify(order1));
   });
 
@@ -77,6 +78,16 @@ describe("Getting all the orders for a user", () => {
       .set("Authorization", `bearer ${buyer.token}`)
       .expect(200);
     expect(body).toHaveLength(2);
+    await order1
+      .populate("product", "name image price")
+      .populate("seller", "username")
+      .execPopulate();
+
+    await order2
+      .populate("product", "name image price")
+      .populate("seller", "username")
+      .execPopulate();
+
     expect(JSON.stringify(body[0])).toBe(JSON.stringify(order2));
     expect(JSON.stringify(body[1])).toBe(JSON.stringify(order1));
   });

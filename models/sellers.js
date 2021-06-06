@@ -21,6 +21,13 @@ const sellerSchema = new Schema({
   ],
 });
 
+sellerSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    delete ret.passwordHash;
+  },
+});
+
 sellerSchema.plugin(uniqueValidator);
 const Seller = mongoose.model("Seller", sellerSchema);
 module.exports = Seller;
