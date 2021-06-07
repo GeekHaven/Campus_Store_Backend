@@ -82,9 +82,21 @@ const getSellerData = async (req, res) => {
       populate: { path: "user" },
     })
     .exec();
-  console.log(seller);
+
   if (token.type !== "seller" || !seller) return res.status(404).end();
   res.status(200).json(seller);
+};
+
+const getSellerProducts = async (req, res) => {
+  const token = req.token;
+  if (token.type !== "seller") return res.status(404).end();
+
+  const products = await Product.find({ seller: token.id })
+    .populate("seller")
+    .exec();
+
+  console.log(products);
+  res.status(200).json(products);
 };
 
 const getOrderById = async (req, res) => {
@@ -132,6 +144,7 @@ async function checkSeller(token, orderId) {
 }
 module.exports = {
   getSellerData,
+  getSellerProducts,
   loginSeller,
   registerSeller,
   getOrderById,

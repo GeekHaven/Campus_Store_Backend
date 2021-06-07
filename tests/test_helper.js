@@ -86,6 +86,12 @@ const initialProducts = [
     image: "foto2.com",
     stock: 200,
   },
+  {
+    name: "Aparoksha blue hoodie",
+    image: "foto2.com",
+    stock: 200,
+    price: 500,
+  },
 ];
 
 //* Functions to help reduce unneccesary code in the tests
