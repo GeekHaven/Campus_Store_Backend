@@ -5,7 +5,7 @@ const Seller = require("../models/sellers");
 
 // Getting a specific product
 const getProductId = async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate("seller","username").exec();
   if (!product) return res.status(404).end();
   res.json(product);
 };
