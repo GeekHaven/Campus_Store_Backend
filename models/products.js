@@ -7,10 +7,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    sellerid: {
+    seller: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "Seller",
     },
     price: {
       type: "Number",
@@ -30,6 +30,12 @@ const productSchema = new Schema(
     timestamps: true,
   }
 );
+
+productSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+  },
+});
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

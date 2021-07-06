@@ -3,11 +3,13 @@ const supertest = require("supertest");
 const {
   initialProducts,
   initialUsers,
+  loginSeller,
   loginUser,
   addProduct,
   app,
   Product,
   User,
+  Seller,
 } = require("../test_helper");
 const api = supertest(app);
 
@@ -15,9 +17,11 @@ let seller, product1, product2;
 beforeEach(async () => {
   await User.deleteMany({});
   await Product.deleteMany({});
-  seller = await loginUser(initialUsers[0]);
-  product1 = await addProduct(seller.tokenUser.id, initialProducts[0]);
-  product2 = await addProduct(seller.tokenUser.id, initialProducts[1]);
+  await Seller.deleteMany({});
+
+  seller = await loginSeller(initialUsers[0]);
+  product1 = await addProduct(seller.tokenSeller.id, initialProducts[0]);
+  product2 = await addProduct(seller.tokenSeller.id, initialProducts[1]);
 });
 
 const url = "/product";

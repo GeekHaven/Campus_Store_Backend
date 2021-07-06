@@ -5,19 +5,32 @@ const orderSchema = new Schema(
   {
     product: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
       required: true,
     },
-    sellerid: {
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+      required: true,
+    },
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    userid: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    quantity: {
+      type: Number,
       required: true,
     },
     confirmed: {
+      type: Boolean,
+      default: false,
+    },
+    delivered: {
+      type: Boolean,
+      default: false,
+    },
+    outForDelivery: {
       type: Boolean,
       default: false,
     },
@@ -26,6 +39,12 @@ const orderSchema = new Schema(
     timestamps: true,
   }
 );
+
+orderSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+  },
+});
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

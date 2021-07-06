@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const sellerSchema = new Schema({
   username: String,
   email: {
     type: String,
@@ -19,19 +19,15 @@ const userSchema = new Schema({
       ref: "Order",
     },
   ],
-  isAdmin: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-userSchema.set("toJSON", {
+sellerSchema.set("toJSON", {
   transform: (doc, ret) => {
     delete ret.__v;
     delete ret.passwordHash;
   },
 });
 
-userSchema.plugin(uniqueValidator);
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+sellerSchema.plugin(uniqueValidator);
+const Seller = mongoose.model("Seller", sellerSchema);
+module.exports = Seller;

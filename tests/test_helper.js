@@ -4,6 +4,7 @@ const User = require("../models/users.js");
 const Order = require("../models/orders");
 const Product = require("../models/products");
 const app = require("../app");
+const Seller = require("../models/sellers.js");
 
 const initialUsers = [
   //*users with complete details
@@ -11,7 +12,6 @@ const initialUsers = [
     username: "sarthak",
     email: "sarthak@gmail.com",
     password: "sarthak",
-    isSeller: true,
   },
   {
     username: "hacker",
@@ -32,6 +32,26 @@ const initialUsers = [
     username: "hacker",
     password: "short",
     email: "linuxuser@gmail.com",
+  },
+  //* admin
+  {
+    username: "admin",
+    password: "password",
+    email: "admin@gmail.com",
+    isAdmin: true,
+  },
+];
+
+const initialSellers = [
+  {
+    username: "Aparkosha",
+    email: "aparoksha@iiita.ac.in",
+    password: "festinthenorth",
+  },
+  {
+    username: "Effervescence",
+    email: "effe@iiita.ac.in",
+    password: "effekaisahoga",
   },
 ];
 
@@ -66,6 +86,12 @@ const initialProducts = [
     image: "foto2.com",
     stock: 200,
   },
+  {
+    name: "Aparoksha blue hoodie",
+    image: "foto2.com",
+    stock: 200,
+    price: 500,
+  },
 ];
 
 //* Functions to help reduce unneccesary code in the tests
@@ -76,7 +102,7 @@ const addUser = async ({ password, ...restData }) => {
     passwordHash,
     ...restData,
   });
-  return await user.save();
+  return user.save();
 };
 
 //* Signs up and logs the user in, and returns jwt and the user's details
@@ -93,34 +119,69 @@ const loginUser = async (user) => {
   };
 };
 
+//* Signs up and logs in a seller
+const loginSeller = async ({ password, ...restData }) => {
+  const seller = await registerSeller({ password, ...restData });
+  const { email, _id: id } = seller;
+  const tokenSeller = { email, id, type: "seller" };
+  const token = jwt.sign(tokenSeller, process.env.SECRET);
+  return {
+    token,
+    tokenSeller,
+  };
+};
+
+//* Adds a seller to the database
+const registerSeller = async ({ password, ...restData }) => {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const seller = await new Seller({
+    passwordHash,
+    ...restData,
+  }).save();
+  return seller;
+};
+
 //* directly adds a product to the database
-const addProduct = async (sellerid, product) => {
+const addProduct = async (seller, product) => {
   const newProduct = new Product({
     ...product,
-    sellerid,
+    seller,
   });
-  return await newProduct.save();
+  return newProduct.save();
 };
 
 //* directly creates an order for a product
-const createOrder = async (userid, product) => {
-  const order = new Order({
-    sellerid: product.sellerid,
-    userid,
+const createOrder = async (userid, product, quantity) => {
+  const order = await new Order({
+    seller: product.seller,
+    user: userid,
     product: product.id,
-  });
-  return await order.save();
+    quantity,
+  }).save();
+
+  const seller = await Seller.findById(product.seller);
+  const user = await User.findById(userid);
+  user.orders.push(order._id);
+  seller.orders.push(order._id);
+  await user.save();
+  await seller.save();
+
+  return order;
 };
 
 module.exports = {
   initialProducts,
   initialUsers,
+  initialSellers,
+  loginSeller,
+  registerSeller,
   addUser,
   loginUser,
   addProduct,
   createOrder,
   User,
   Product,
+  Seller,
   Order,
   app,
 };

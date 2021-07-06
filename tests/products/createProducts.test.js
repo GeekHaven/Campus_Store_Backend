@@ -3,11 +3,13 @@ const supertest = require("supertest");
 const {
   initialProducts,
   initialUsers,
+  initialSellers,
   loginUser,
-  addProduct,
+  loginSeller,
   app,
   Product,
   User,
+  Seller,
 } = require("../test_helper");
 const api = supertest(app);
 
@@ -15,7 +17,8 @@ let seller, buyer;
 beforeEach(async () => {
   await User.deleteMany({});
   await Product.deleteMany({});
-  seller = await loginUser(initialUsers[0]);
+  await Seller.deleteMany({});
+  seller = await loginSeller(initialSellers[0]);
   buyer = await loginUser(initialUsers[1]);
 });
 
@@ -79,15 +82,15 @@ describe("Creating products", () => {
     expect(res.body.error).toBe("Unauthorized");
   });
 
-  it("Returns 401 status and error when invalid token is provided", async () => {
+  it("Returns 400 status and error when malformed token is provided", async () => {
     const res = await api
       .post(`${url}/create`)
       .send(initialProducts[0])
       .set("Authorization", `bearer random.bs.here`)
-      .expect(401);
+      .expect(400);
     const product = await Product.findById(res.body._id);
     expect(product).toBeFalsy();
-    expect(res.body.error).toBe("Unauthorized");
+    expect(res.body.error).toBe("Invalid token");
   });
 
   it("Returns 401 status and error when the user is not a seller", async () => {
